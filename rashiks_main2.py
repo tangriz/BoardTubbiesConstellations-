@@ -5,6 +5,7 @@ topicstarter's/commentator's messages's attributies processing;
 obtaining list of all users who posted in the topicstarter's message with specific id
 '''
 import time
+# this module contains all functions and classes requied to achieve the purpose
 import xml_update_2_0 as xu
 
 #patch requicked to print unicode strings to console
