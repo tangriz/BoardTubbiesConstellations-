@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import urllib
-from lxml import etree
 import datetime
+from lxml import etree
 from init_vars import *
 
 
@@ -14,14 +14,13 @@ def BadInit():
     XMLstrProcessing(xmls)
     while True:
         LOUN = UpdateListOfUserNames(1)
-        # update initialModel here!!
         print "list o users:", LOUN
         if LOUN is None:
             print "\n", "======= END of BadInit =======", "\n"
+            return last_mes_id
             break
+        M.modelUpdate(LOUN)
         DebugSaveToFile(LOUN)
-        # update initialModel here!!
-     
     
 
 def xmlDatabaseUpdate():
