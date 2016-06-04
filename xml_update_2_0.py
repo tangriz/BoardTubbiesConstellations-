@@ -28,6 +28,8 @@ def xmlDatabaseUpdate():
     # check xml-files on hard and download new xml-thousand-files 
     return True
 
+# make url-request to xmlfp board service and get MessageId of the last available message in xml-database
+# Attention! The last message on the forum is NOT always the last message available in xml-database. Especially on night..
 def GetLastMessageId():
     url_request = 'http://zlo.rt.mipt.ru:7500/xmlfp/xmlfp.jsp?xmlfp=lastMessageNumber&site=0'
 
@@ -37,6 +39,7 @@ def GetLastMessageId():
     lastId = int(xmltree.text)
     return lastId
 
+# check if new message in xml-database is available
 def CheckForNewMessage(old_Id):
     new_Id = GetLastMessageId()
     if new_Id == old_Id:
@@ -47,12 +50,14 @@ def CheckForNewMessage(old_Id):
 #is_board_updated = CheckForNewMessage(last_Id)
 #print is_board_updated
 
+# download xml files with a giving message id range
 def DownloadNewXMLs(firstId,lastId):
     url_prefix = 'http://zlo.rt.mipt.ru:7500/xmlfp/xmlfp.jsp?xmlfp=messages&site=0'
     url_request = url_prefix + '&from=' + str(firstId) + '&to=' + str(lastId) # no more than 1000 messages at once
     xmlstr = urllib.urlopen(url_request).read() # add exception for url non-availability
     return(xmlstr)
 
+# define a class for parsing xml
 class Message:
     
     date = None
