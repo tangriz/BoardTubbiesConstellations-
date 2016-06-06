@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
-
+'''
+I don't know how I have to describe this.
+It just contains all functions that we need to deal with online-xml-databases (xmlfp board service),
+download xml, extracting data, updating list of usernames
+'''
 import urllib
 import datetime
 from lxml import etree
+
+# import global data structures
 from init_vars import *
 
 # import high-usage function for parsing XML
@@ -72,8 +78,7 @@ class Message:
             self.name == self.id
             #flog.write('The name is ABSENT, html/xml corruption? MesId:' + Msg.id + '\n')
 
-# constract dictionary with following structure:
-# 
+# construct and update dictionaries with structures described in init_vars module
 def UpdateDicts(m):
     
     # adding TS username to Dict.            
@@ -139,7 +144,7 @@ def UpdateListOfUserNames(days_to_wait):
     
     # check if the time's come
     if t_post < t_load.isoformat() :
-        # Get User Names To Update Model
+        # get user names to update model
         LOUN = topstIds[topicIdStack[0][0]]
         del topicIdStack[0]
         return LOUN
@@ -175,4 +180,3 @@ def BadInit():
         M.modelUpdate(LOUN)
         DebugSaveToFile(LOUN)
     
-
