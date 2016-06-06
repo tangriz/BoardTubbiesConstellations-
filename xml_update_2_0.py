@@ -8,7 +8,7 @@ from init_vars import *
 # import high-usage function for parsing XML
 used_parser = etree.XMLParser(recover=True)
 
-# quick-fix xml-database upload on server start
+# temporal xml-database upload on server start
 # do exact thing that whole service do but using 1000 last forum messages
 def BadInit():
     last_mes_id = GetLastMessageId()
