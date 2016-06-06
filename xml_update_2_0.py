@@ -8,23 +8,6 @@ from init_vars import *
 # import high-usage function for parsing XML
 used_parser = etree.XMLParser(recover=True)
 
-# temporal xml-database upload on server start
-# do exact thing that whole service do but using 1000 last forum messages
-def BadInit():
-    last_mes_id = GetLastMessageId()
-    xmls = DownloadNewXMLs(last_mes_id-999, last_mes_id)
-    XMLstrProcessing(xmls)
-    while True:
-        LOUN = UpdateListOfUserNames(1)
-        print "list o users:", LOUN
-        if LOUN is None:
-            print "\n", "======= END of BadInit =======", "\n"
-            return last_mes_id
-            break
-        M.modelUpdate(LOUN)
-        DebugSaveToFile(LOUN)
-    
-
 def xmlDatabaseUpdate():
     # init on starting server
     # check xml-files on hard and download new xml-thousand-files 
@@ -170,4 +153,21 @@ def DebugSaveToFile(inp):
             fout.write('[' + usr.encode('utf-8') + ']')
             fout.write('\n')
         fout.close()
+
+# temporal xml-database upload on server start
+# do exact thing that whole service do but using 1000 last forum messages
+def BadInit():
+    last_mes_id = GetLastMessageId()
+    xmls = DownloadNewXMLs(last_mes_id-999, last_mes_id)
+    XMLstrProcessing(xmls)
+    while True:
+        LOUN = UpdateListOfUserNames(1)
+        print "list o users:", LOUN
+        if LOUN is None:
+            print "\n", "======= END of BadInit =======", "\n"
+            return last_mes_id
+            break
+        M.modelUpdate(LOUN)
+        DebugSaveToFile(LOUN)
+    
 
