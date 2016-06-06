@@ -5,9 +5,11 @@ import datetime
 from lxml import etree
 from init_vars import *
 
-
+# import high-usage function for parsing XML
 used_parser = etree.XMLParser(recover=True)
 
+# quick-fix xml-database upload on server start
+# do exact thing that whole service do but using 1000 last forum messages
 def BadInit():
     last_mes_id = GetLastMessageId()
     xmls = DownloadNewXMLs(last_mes_id-999, last_mes_id)
@@ -57,7 +59,7 @@ def DownloadNewXMLs(firstId,lastId):
     xmlstr = urllib.urlopen(url_request).read() # add exception for url non-availability
     return(xmlstr)
 
-# define a class for parsing xml
+# define a class for parsing xml and extracting message data
 class Message:
     
     date = None
@@ -117,8 +119,9 @@ def UpdateDicts(m):
             
         else :
             return -1
-            # print 'old TS message is commented. Retrieving early xmls..' # add this functionality            
+            # print 'old TS message is commented. Retrieving early xmls..' # <-- add this functionality     
 
+# update stack-list with tuples = (TS message id, TS message posting date)
 def UpdateStackOfTS(m):
     if m.parentId == 0 : topicIdStack.append((m.id,m.date))        
 
