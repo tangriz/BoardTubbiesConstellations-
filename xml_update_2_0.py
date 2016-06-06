@@ -8,6 +8,7 @@ from init_vars import *
 # import high-usage function for parsing XML
 used_parser = etree.XMLParser(recover=True)
 
+# for future
 def xmlDatabaseUpdate():
     # init on starting server
     # check xml-files on hard and download new xml-thousand-files 
@@ -35,7 +36,7 @@ def CheckForNewMessage(old_Id):
 #is_board_updated = CheckForNewMessage(last_Id)
 #print is_board_updated
 
-# download xml files with a giving message id range
+# download xml files with a giving message index range
 def DownloadNewXMLs(firstId,lastId):
     url_prefix = 'http://zlo.rt.mipt.ru:7500/xmlfp/xmlfp.jsp?xmlfp=messages&site=0'
     url_request = url_prefix + '&from=' + str(firstId) + '&to=' + str(lastId) # no more than 1000 messages at once
@@ -45,16 +46,17 @@ def DownloadNewXMLs(firstId,lastId):
 # define a class for parsing xml and extracting message data
 class Message:
     
-    date = None
-    status = None
-    id = None
-    parentId = None
-    name = None
+    date = None # date/time of the post
+    status = None # = deleted, if message isn't available in xml-database; =None otherwise
+    id = None # message index
+    parentId = None # index of the message to whom user replies
+    name = None # user name
     
     def __init__(self, msg):
         # check if message is deleted from xml-database
         self.status = msg.find('status')
     
+    # method to extract all needful tags from <message>
     def fill(self, msg):
         self.date = msg.find('info/date').text
         
@@ -70,7 +72,8 @@ class Message:
             self.name == self.id
             #flog.write('The name is ABSENT, html/xml corruption? MesId:' + Msg.id + '\n')
 
-
+# constract dictionary with following structure:
+# 
 def UpdateDicts(m):
     
     # adding TS username to Dict.            
@@ -108,7 +111,7 @@ def UpdateDicts(m):
 def UpdateStackOfTS(m):
     if m.parentId == 0 : topicIdStack.append((m.id,m.date))        
 
-
+# process downloaded xml-string: parsing, extracting values, updating my dicts
 def XMLstrProcessing(xmlstr):
     xmltree = etree.fromstring(xmlstr, parser=used_parser)
     
@@ -125,25 +128,27 @@ def XMLstrProcessing(xmlstr):
         UpdateDicts(Msg)
         UpdateStackOfTS(Msg)
 
-        
-#def SendUserNamesToMainOfKVasya():
-#    topstIds[topicIdStack[0][0]]
-# time deal
+# check if the moment to grab data to the Model has come (waiting for users to stop posting to TS post)
+# update list of user names
 def UpdateListOfUserNames(days_to_wait):
     tnow = datetime.datetime.now()
     tlag = datetime.timedelta(days=days_to_wait)
     t_load = tnow - tlag
     t_post = topicIdStack[0][1]
     print t_post, ' '*4, t_load.isoformat()
+    
+    # check if the time's come
     if t_post < t_load.isoformat() :
-        #GetUserNamesToSendToMainOfKVasya
+        # Get User Names To Update Model
         LOUN = topstIds[topicIdStack[0][0]]
         del topicIdStack[0]
         return LOUN
     else:
         print "nothing to update", topicIdStack[0]
         return None
-
+        
+# saving to file the values that updates the model
+# just for gebbuging
 def DebugSaveToFile(inp):
     fout_path = 'D:/program_backup/python-sources/data/output/'
     if inp is not None :
