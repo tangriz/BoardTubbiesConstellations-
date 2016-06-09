@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
 '''
 I hate you, KVasya! This is fucking bullshit!!!!
+I fucking haven't understand!! My try:
 The program operates as follows:
-1. xu.BadInit() - download last N=1000 posted messages,
-                extract data, updates Model with it and
-                return last processed message
-2. ...
-Realization of board-xml-database loading, real-time updating;
-topicstarter's/commentator's messages's attributies processing;
-obtaining list of all users who posted in the topicstarter's message with specific id
+1. xu.BadInit() - download last N=1000 posted messages, extract data,
+                  updates Model with it and return last processed message
+                  
+Then in the while cycle real-time part starts to operate -->
+2. time.sleep(T) - waiting T seconds between checks of the forum for new messages
+
+3. xu.CheckForNewMessage(lastProcId) - in the if-else clause we check
+                                      for new messages available on forum
+                
+4. xu.GetLastMessageId() - get last message index available on forum (not processed yet)
+
+5. xu.DownloadNewXMLs(lastProcId,lastId) - get new forum messages in range (lastProcId,lastId),
+                                            that is those ones that is not processed yet
+                                            
+6. xu.XMLstrProcessing(new_xmlstr) - process the xml string.
+                                    See xu module for details. 
 '''
 import time
 # this module contains all functions and classes requied to achieve the purpose
