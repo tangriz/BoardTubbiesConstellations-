@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 '''
+I hate you, KVasya! This is fucking bullshit!!!!
+The program operates as follows:
+1. xu.BadInit() - download last N=1000 posted messages,
+                extract data, updates Model with it and
+                return last processed message
+2. ...
 Realization of board-xml-database loading, real-time updating;
 topicstarter's/commentator's messages's attributies processing;
 obtaining list of all users who posted in the topicstarter's message with specific id
@@ -8,38 +14,35 @@ import time
 # this module contains all functions and classes requied to achieve the purpose
 import xml_update_2_0 as xu
 
-#patch requicked to print unicode strings to console
-#import win_unicode_console
-#win_unicode_console.enable()
+# download and processing last 1000 messages, updating Model with them
+lastProcId = xu.BadInit() # get last _processed_ message index
 
-#AwesomeInitOfDatabase()
-# ^^^ We truly needs this function (need further discussion)
-
-# download and processing last 1000 messages from online-board-xml-database, updating Model, MyDicts using this data
-old_lastId = xu.BadInit()
-
-# real-time Model and myDicts update
+# real-time Model update
 while True:
-    # waiting some time between checking the forum for new messages
+    # waiting 10 seconds between checks of the forum for new messages
     time.sleep(10)
     
     # check forum for new message and process it if it's available
-    if xu.CheckForNewMessage(old_lastId):
-        lastId = xu.GetLastMessageId()
+    if xu.CheckForNewMessage(lastProcId):
+        lastId = xu.GetLastMessageId() # get last message index available on forum (not processed yet)
         
-        # download new xmls appeared in time of sleep
-        new_xmlstr = xu.DownloadNewXMLs(old_lastId,lastId)
-        old_lastId = lastId
+        # download new xmls appeared in the wait time and convert it to a string
+        new_xmlstr = xu.DownloadNewXMLs(lastProcId,lastId) # may be bug here. Should be (lastProcId+1,lastId)
         
-        # gets message data and updates topstIds, commIds, topicIdStack
+        # gets message data from xml_string and process it
+        # Wanna know what does "process" mean? That is - br-bla-blm-grr-uhm (my guts moving around).
+        # or may look in xu module. I hate you, KVasya!!!
         xu.XMLstrProcessing(new_xmlstr)
-        print "Message accepted: ", old_lastId
+        lastProcId = lastId # new messages processed. By now last processed message is the last on forum.
+        print "Last message accepted: ", lastProcId
     
-    else: print "....... waiting messages ....... last mesid:", old_lastId
+    else: print "....... waiting messages ....... last processed MesId:", lastProcId
     
-    # update list of usernames
+    # get new list of usernames
     new_list = xu.UpdateListOfUserNames(1)
     print "Updating Model with:", new_list, '\n'
     
+    # Updating Model with new_list
     M.modelUpdate(new_list)
-    xu.DebugSaveToFile(new_list)
+    
+    #xu.DebugSaveToFile(new_list)
