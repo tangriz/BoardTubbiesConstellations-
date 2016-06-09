@@ -8,13 +8,19 @@ import urllib
 import datetime
 from lxml import etree
 
+# KVasya said we need to pull my guts back in the ass, but here is not the right place for this stuff also.
+# But I'll do my best to fulfil the requiments. OK, that's enough.
+#patch requicked to print unicode strings to console
+#import win_unicode_console
+#win_unicode_console.enable()
+
 # import global data structures
 from init_vars import *
 
 # import high-usage function for parsing XML
 used_parser = etree.XMLParser(recover=True)
 
-# for future
+# for future: do this AwesomeInitOfDatabase() function.
 def xmlDatabaseUpdate():
     # init on starting server
     # check xml-files on hard and download new xml-thousand-files 
@@ -133,22 +139,25 @@ def XMLstrProcessing(xmlstr):
         UpdateDicts(Msg)
         UpdateStackOfTS(Msg)
 
-# check if the moment to grab data to the Model has come (waiting for users to stop posting to TS post)
-# update list of user names
+
+# get new list of user names (LOUN)
 def UpdateListOfUserNames(days_to_wait):
-    tnow = datetime.datetime.now()
-    tlag = datetime.timedelta(days=days_to_wait)
-    t_load = tnow - tlag
-    t_post = topicIdStack[0][1]
-    print t_post, ' '*4, t_load.isoformat()
+    tnow = datetime.datetime.now() # take current date and time
+    tlag = datetime.timedelta(days=days_to_wait) # convert time lag to appropriate format
+    t_load = tnow - tlag # calc the time when to feed data to Model
+    t_post = topicIdStack[0][1] # take the 1st element of stack (turn)
+    #print t_post, ' '*4, t_load.isoformat()
     
-    # check if the time's come
+    # check if the moment to grab data to the Model has come
+    # (waiting for users to "stop" posting to TS post, actually we just wait 1 day or more)
     if t_post < t_load.isoformat() :
-        # get user names to update model
+        # get list of user names to update model
         LOUN = topstIds[topicIdStack[0][0]]
+        # delete taken LOUN from stack. Derni anus, pyos!
         del topicIdStack[0]
         return LOUN
     else:
+        # if topicIdStack is empty, that is there is nothing to feed the Model, then -->
         print "nothing to update", topicIdStack[0]
         return None
         
@@ -167,16 +176,23 @@ def DebugSaveToFile(inp):
 # temporal xml-database upload on server start
 # do exact thing that whole service do but using 1000 last forum messages
 def BadInit():
+    # get last message index
     last_mes_id = GetLastMessageId()
-    xmls = DownloadNewXMLs(last_mes_id-999, last_mes_id)
-    XMLstrProcessing(xmls)
+    # download 1000 last messages posted on forum from xmlfp board service
+    xmls_str = DownloadNewXMLs(last_mes_id-999, last_mes_id)
+    # extracting and process the data from downloaded XMLs
+    XMLstrProcessing(xmls_str)
+    
     while True:
+        # get new list of usernames by means of proccesing topicIdStack
         LOUN = UpdateListOfUserNames(1)
         print "list o users:", LOUN
-        if LOUN is None:
+        if LOUN is None: # if topicIdStack is empty, that is there is nothing to feed the Model,
+                        # or right moment has not come, then -->
             print "\n", "======= END of BadInit =======", "\n"
-            return last_mes_id
+            return last_mes_id # returns last processed message index
             break
+        # updating Model with new list of user names (LOUN)
         M.modelUpdate(LOUN)
         DebugSaveToFile(LOUN)
     
