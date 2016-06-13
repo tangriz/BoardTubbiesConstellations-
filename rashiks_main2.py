@@ -2,7 +2,7 @@
 '''
 I hate you, KVasya! This is fucking bullshit!!!!
 I fucking haven't understand!! My try:
-The program operates as follows:
+The program uses these functions in the order of appareance:
 1. xu.BadInit() - download last N=1000 posted messages, extract data,
                   updates Model with it and return last processed message
                   
@@ -15,10 +15,12 @@ Then in the while cycle real-time part starts to operate -->
 4. xu.GetLastMessageId() - get last message index available on forum (not processed yet)
 
 5. xu.DownloadNewXMLs(lastProcId,lastId) - get new forum messages in range (lastProcId,lastId),
-                                            that is those ones that is not processed yet
+                                            (those ones that are not processed yet)
                                             
-6. xu.XMLstrProcessing(new_xmlstr) - process the xml string.
-                                    See xu module for details. 
+6. xu.XMLstrProcessing(new_xmlstr) - process the xml string: get message data, etc.
+                                    See xu module for details.
+7. xu.UpdateListOfUserNames(X) - get new list of users, which commented in the TS post X days ago.
+8. M.modelUpdate(new_list) - updates model with new list of users
 '''
 import time
 # this module contains all functions and classes requied to achieve the purpose
