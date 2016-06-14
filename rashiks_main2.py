@@ -20,13 +20,14 @@ Then in the while cycle real-time part starts to operate -->
 6. xu.XMLstrProcessing(new_xmlstr) - process the xml string: get message data, etc.
                                     See xu module for details.
 7. xu.UpdateListOfUserNames(X) - get new list of users, which commented in the TS post X days ago.
+
 8. M.modelUpdate(new_list) - updates model with new list of users
 '''
 import time
 # this module contains all functions and classes requied to achieve the purpose
 import xml_update_2_0 as xu
 
-# download and processing last 1000 messages, updating Model with them
+# download and processing the last 1000 messages, updating Model with them
 lastProcId = xu.BadInit() # get last _processed_ message index
 
 # real-time Model update
@@ -36,16 +37,16 @@ while True:
     
     # check forum for new message and process it if it's available
     if xu.CheckForNewMessage(lastProcId):
-        lastId = xu.GetLastMessageId() # get last message index available on forum (not processed yet)
+        lastId = xu.GetLastMessageId() # get the last message index available on the forum (not processed yet)
         
-        # download new xmls appeared in the wait time and convert it to a string
-        new_xmlstr = xu.DownloadNewXMLs(lastProcId,lastId) # may be bug here. Should be (lastProcId+1,lastId)
+        # download new xmls appeared in the wait-time and convert it to a string
+        new_xmlstr = xu.DownloadNewXMLs(lastProcId+1,lastId)
         
         # gets message data from xml_string and process it
         # Wanna know what does "process" mean? That is - br-bla-blm-grr-uhm (my guts moving around).
         # or may look in xu module. I hate you, KVasya!!!
         xu.XMLstrProcessing(new_xmlstr)
-        lastProcId = lastId # new messages processed. By now last processed message is the last on forum.
+        lastProcId = lastId # new messages processed. By now the last processed message is the last on the forum.
         print "Last message accepted: ", lastProcId
     
     else: print "....... waiting messages ....... last processed MesId:", lastProcId
@@ -54,7 +55,8 @@ while True:
     new_list = xu.UpdateListOfUserNames(1)
     print "Updating Model with:", new_list, '\n'
     
-    # Updating Model with new_list
+    # updating Model with new_list
     M.modelUpdate(new_list)
     
+    # saving new_list to a file
     #xu.DebugSaveToFile(new_list)
