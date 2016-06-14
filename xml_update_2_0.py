@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 '''
-I don't know how I have to describe this.
-It just contains all functions that we need to deal with online-xml-databases (xmlfp board service),
+In the sake of KVasya the Greatest!
+It just contains all functions that we need to interact with online-xml-databases (xmlfp board service),
 download xml, extracting data, updating list of usernames
 '''
 import urllib
 import datetime
 from lxml import etree
 
-# KVasya said we need to pull my guts back in the ass, but here is not the right place for this stuff also.
-# But I'll do my best to fulfil the requiments. OK, that's enough.
+# KVasya said we need to pull my guts back in the ass, but here also is not the right place for the stuff below.
+# But I'll do my best to fulfil the requiments. OK, that's enough of this shit.
 #patch requicked to print unicode strings to console
 #import win_unicode_console
 #win_unicode_console.enable()
@@ -20,6 +20,10 @@ from init_vars import *
 # import high-usage function for parsing XML
 used_parser = etree.XMLParser(recover=True)
 
+# url prefix of the search service. It'd changed after the board was reloaded.
+url_search_pref = 'http://search.mipt.me/'
+
+
 # for future: do this AwesomeInitOfDatabase() function.
 def xmlDatabaseUpdate():
     # init on starting server
@@ -29,7 +33,7 @@ def xmlDatabaseUpdate():
 # make url-request to xmlfp board service and get MessageId of the last available message in xml-database
 # Attention! The last message on the forum is NOT always the last message available in xml-database. Especially on night..
 def GetLastMessageId():
-    url_request = 'http://zlo.rt.mipt.ru:7500/xmlfp/xmlfp.jsp?xmlfp=lastMessageNumber&site=0'
+    url_request = url_search_pref + 'xmlfp/xmlfp.jsp?xmlfp=lastMessageNumber&site=0'
 
     lastnum_xmlstr = urllib.urlopen(url_request).read() # add exception for url non-availability
     xmltree = etree.fromstring(lastnum_xmlstr, parser=used_parser)
@@ -50,7 +54,7 @@ def CheckForNewMessage(old_Id):
 
 # download xml files with a giving message index range
 def DownloadNewXMLs(firstId,lastId):
-    url_prefix = 'http://zlo.rt.mipt.ru:7500/xmlfp/xmlfp.jsp?xmlfp=messages&site=0'
+    url_prefix = url_search_pref + 'xmlfp/xmlfp.jsp?xmlfp=messages&site=0'
     url_request = url_prefix + '&from=' + str(firstId) + '&to=' + str(lastId) # no more than 1000 messages at once
     xmlstr = urllib.urlopen(url_request).read() # add exception for url non-availability
     return(xmlstr)
@@ -118,7 +122,7 @@ def UpdateDicts(m):
             return -1
             # print 'old TS message is commented. Retrieving early xmls..' # <-- add this functionality     
 
-# update stack-list with tuples = (TS message id, TS message posting date)
+# update stack-list with tuples = (TS message index, TS message posting date)
 def UpdateStackOfTS(m):
     if m.parentId == 0 : topicIdStack.append((m.id,m.date))        
 
@@ -140,7 +144,7 @@ def XMLstrProcessing(xmlstr):
         UpdateStackOfTS(Msg)
 
 
-# get new list of user names (LOUN)
+# get new list of user names (LOUN), which commented in the TS message posted days_to_wait days ago.
 def UpdateListOfUserNames(days_to_wait):
     tnow = datetime.datetime.now() # take current date and time
     tlag = datetime.timedelta(days=days_to_wait) # convert time lag to appropriate format
