@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-In the sake of KVasya the Greatest!
+In the sake of the KVasya the Greatest!
 It just contains all functions that we need to interact with online-xml-databases (xmlfp board service),
 download xml, extracting data, updating list of usernames
 '''
@@ -174,7 +174,7 @@ def DebugSaveToFile(inp):
         for usr in inp :
             print usr
             fout.write('[' + usr.encode('utf-8') + ']')
-            fout.write('\n')
+        fout.write('\n')
         fout.close()
 
 # temporal xml-database upload on server start
