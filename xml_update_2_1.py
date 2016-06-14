@@ -231,5 +231,5 @@ def BadInit():
         lst_LOUN.append(LOUN)
         
         # saving new_list to a file
-        DebugSaveToFile(LOUN)
+    #    DebugSaveToFile(LOUN)
     
